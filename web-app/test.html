@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        h1 { color: #333; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Test Page Working!</h1>
+        <p>If you can see this, the basic HTML deployment is working.</p>
+        <p>Time: <span id="time"></span></p>
+        <nav>
+            <a href="index.html">Go to Home</a> |
+            <a href="start.html">Go to Start</a> |
+            <a href="stop.html">Go to Stop</a> |
+            <a href="leaderboard.html">Go to Leaderboard</a>
+        </nav>
+    </div>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleString();
+        setInterval(() => {
+            document.getElementById('time').textContent = new Date().toLocaleString();
+        }, 1000);
+    </script>
+</body>
+</html>

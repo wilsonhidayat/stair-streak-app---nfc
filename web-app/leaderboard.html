@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - TQ Stair Race</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 300;
+            color: #ffffff;
+        }
+        
+        .station-indicator {
+            background: #333333;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #555555;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            font-weight: 400;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 80px 0 40px;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .navbar.open {
+            right: 0;
+        }
+        
+        .navbar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .navbar-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .navbar-links {
+            list-style: none;
+            padding: 0 40px;
+        }
+        
+        .navbar-link {
+            display: block;
+            padding: 16px 0;
+            color: #cccccc;
+            text-decoration: none;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: color 0.2s ease;
+        }
+        
+        .navbar-link:hover {
+            color: #ffffff;
+        }
+        
+        .navbar-link.active {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            padding: 60px 0;
+        }
+        
+        .station-header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+        
+        .station-header h1 {
+            font-size: 48px;
+            font-weight: 200;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+        
+        .station-header p {
+            font-size: 18px;
+            opacity: 0.8;
+            font-weight: 300;
+            color: #cccccc;
+        }
+        
+        .stats-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 200;
+            color: #ffffff;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #aaaaaa;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .controls {
+            text-align: center;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            background: #333333;
+            color: #ffffff;
+            border: 1px solid #555555;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            background: #555555;
+            transform: translateY(-2px);
+        }
+        
+        .leaderboard-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .leaderboard-header {
+            background: linear-gradient(135deg, #333333, #555555);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .leaderboard-header h2 {
+            font-size: 28px;
+            font-weight: 200;
+            color: #ffffff;
+            margin: 0;
+        }
+        
+        .leaderboard-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .entry {
+            padding: 24px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s ease;
+        }
+        
+        .entry:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .entry:last-child {
+            border-bottom: none;
+        }
+        
+        .entry-info {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .rank {
+            font-size: 24px;
+            font-weight: 300;
+            color: #ffffff;
+            min-width: 40px;
+        }
+        
+        .name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 18px;
+        }
+        
+        .time {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: 400;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge.best {
+            background: #333333;
+            color: #ffffff;
+            border: 1px solid #555555;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: #aaaaaa;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h2 {
+            font-size: 28px;
+            font-weight: 200;
+            margin-bottom: 12px;
+            color: #cccccc;
+        }
+        
+        .empty-state p {
+            color: #aaaaaa;
+            font-size: 16px;
+            font-weight: 300;
+        }
+        
+        @media (max-width: 768px) {
+            .station-header h1 {
+                font-size: 36px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .entry {
+                padding: 20px;
+            }
+            
+            .entry-info {
+                gap: 16px;
+            }
+            
+            .navbar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-text">TQ STAIR RACE</div>
+                </div>
+                <div class="station-indicator">Leaderboard</div>
+                <button class="menu-toggle" onclick="toggleNavbar()">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="navbar-overlay" id="navbar-overlay" onclick="closeNavbar()"></div>
+    <nav class="navbar" id="navbar">
+        <ul class="navbar-links">
+            <li><a href="index.html" class="navbar-link">Home</a></li>
+            <li><a href="start.html" class="navbar-link">Start Station</a></li>
+            <li><a href="stop.html" class="navbar-link">Finish Station</a></li>
+            <li><a href="leaderboard.html" class="navbar-link active">Leaderboard</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="station-header">
+                <h1>Leaderboard</h1>
+                <p>Stair climbing times - ranked by performance</p>
+            </div>
+
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="total-entries">0</span>
+                        <span class="stat-label">Total Attempts</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="unique-racers">0</span>
+                        <span class="stat-label">Unique Racers</span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button id="clear-leaderboard" class="btn">Clear All Data</button>
+                </div>
+            </div>
+
+            <div class="leaderboard-section">
+                <div class="leaderboard-header">
+                    <h2>Personal Best Times</h2>
+                </div>
+                <div id="leaderboard-container" class="leaderboard-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <h2>No Times Yet</h2>
+                        <p>Complete your first race to appear on the leaderboard</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleNavbar() {
+            const navbar = document.getElementById('navbar');
+            const overlay = document.getElementById('navbar-overlay');
+            
+            navbar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        
+        function closeNavbar() {
+            const navbar = document.getElementById('navbar');
+            const overlay = document.getElementById('navbar-overlay');
+            
+            navbar.classList.remove('open');
+            overlay.classList.remove('open');
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZgLBWM00ivf7kXb-D9sPcx6UyI6xdNRQ",
+            authDomain: "nfc-e2bca.firebaseapp.com",
+            databaseURL: "https://nfc-e2bca-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "nfc-e2bca",
+            storageBucket: "nfc-e2bca.firebasestorage.app",
+            messagingSenderId: "457400554397",
+            appId: "1:457400554397:web:3d06c3b6d4136ba9b05574"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Load leaderboard data
+        const leaderboardRef = ref(database, 'leaderboard');
+        onValue(leaderboardRef, (snapshot) => {
+            const data = snapshot.val() || {};
+            const entries = Object.entries(data).map(([key, value]) => ({
+                id: key,
+                ...value
+            }));
+
+            // Group by cardId and keep only the best time for each card, also count attempts
+            const cardBestTimes = {};
+            const cardAttempts = {};
+            
+            entries.forEach(entry => {
+                // Count attempts per card
+                cardAttempts[entry.cardId] = (cardAttempts[entry.cardId] || 0) + 1;
+                
+                // Keep only best time
+                if (!cardBestTimes[entry.cardId] || entry.time < cardBestTimes[entry.cardId].time) {
+                    cardBestTimes[entry.cardId] = entry;
+                }
+            });
+
+            // Convert back to array and add attempt counts, sort by time (fastest first)
+            const bestTimes = Object.values(cardBestTimes).map(entry => ({
+                ...entry,
+                attempts: cardAttempts[entry.cardId]
+            }));
+            bestTimes.sort((a, b) => a.time - b.time);
+
+            updateStats(entries, bestTimes);
+            updateLeaderboard(bestTimes);
+        });
+
+        function updateStats(allEntries, bestTimes) {
+            const totalEntries = allEntries.length;
+            const uniqueRacers = bestTimes.length;
+            
+            document.getElementById('total-entries').textContent = totalEntries;
+            document.getElementById('unique-racers').textContent = uniqueRacers;
+        }
+
+        function updateLeaderboard(entries) {
+            const container = document.getElementById('leaderboard-container');
+            
+            if (entries.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🏆</div>
+                        <h2>No Times Yet</h2>
+                        <p>Complete your first race to appear on the leaderboard</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            entries.forEach((entry, index) => {
+                const rank = index + 1;
+                
+                html += `
+                    <div class="entry">
+                        <div class="entry-info">
+                            <span class="rank">${rank}</span>
+                            <span class="name">${entry.cardId}</span>
+                            <span class="badge best">${entry.attempts} attempts</span>
+                        </div>
+                        <span class="time">${formatTime(entry.time)}</span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = (seconds % 60).toFixed(2);
+            
+            if (h > 0) return `${h}h ${m}m ${s}s`;
+            if (m > 0) return `${m}m ${s}s`;
+            return `${s}s`;
+        }
+
+        // Clear leaderboard
+        document.getElementById('clear-leaderboard').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to clear all leaderboard data? This action cannot be undone.')) {
+                try {
+                    await remove(ref(database, 'leaderboard'));
+                } catch (error) {
+                    console.error('Error clearing leaderboard:', error);
+                    alert('Error clearing leaderboard. Please try again.');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

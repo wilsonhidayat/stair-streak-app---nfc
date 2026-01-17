@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQ STAIR RACE - Professional Race Timing System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 300;
+            color: #ffffff;
+        }
+        
+        .status-badge {
+            background: #333333;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #555555;
+        }
+        
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            font-weight: 400;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 80px 0 40px;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .navbar.open {
+            right: 0;
+        }
+        
+        .navbar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .navbar-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .navbar-links {
+            list-style: none;
+            padding: 0 40px;
+        }
+        
+        .navbar-link {
+            display: block;
+            padding: 16px 0;
+            color: #cccccc;
+            text-decoration: none;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: color 0.2s ease;
+        }
+        
+        .navbar-link:hover {
+            color: #ffffff;
+        }
+        
+        .navbar-link.active {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            padding: 60px 0;
+        }
+        
+        .hero {
+            text-align: center;
+            margin-bottom: 80px;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 200;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            opacity: 0.8;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            color: #cccccc;
+        }
+        
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+        
+        .station-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .station-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffffff, #cccccc);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .station-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .station-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 24px;
+            transition: transform 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .station-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+        
+        .start-card .card-icon {
+            background: linear-gradient(135deg, #333333, #555555);
+            color: #ffffff;
+        }
+        
+        .stop-card .card-icon {
+            background: linear-gradient(135deg, #333333, #555555);
+            color: #ffffff;
+        }
+        
+        .leaderboard-card .card-icon {
+            background: linear-gradient(135deg, #333333, #555555);
+            color: #ffffff;
+        }
+        
+        .card-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+        
+        .card-description {
+            color: #aaaaaa;
+            font-size: 16px;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+        
+        .info-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .info-title {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 24px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .info-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            border-radius: 2px;
+        }
+        
+        .steps {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            color: #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #ffffff;
+        }
+        
+        .step-description {
+            color: #aaaaaa;
+            font-size: 15px;
+            font-weight: 300;
+        }
+        
+        .time-display {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .time-label {
+            font-size: 14px;
+            color: #aaaaaa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        
+        .time-value {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 24px;
+            color: #ffffff;
+            font-weight: 400;
+        }
+        
+        .note {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            color: #cccccc;
+            font-size: 14px;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .stations-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .station-card {
+                padding: 30px;
+            }
+            
+            .navbar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-text">TQ STAIR RACE</div>
+                </div>
+                <div class="status-badge">
+                    System Online
+                </div>
+                <button class="menu-toggle" onclick="toggleNavbar()">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="navbar-overlay" id="navbar-overlay" onclick="closeNavbar()"></div>
+    <nav class="navbar" id="navbar">
+        <ul class="navbar-links">
+            <li><a href="index.html" class="navbar-link active">Home</a></li>
+            <li><a href="start.html" class="navbar-link">Start Station</a></li>
+            <li><a href="stop.html" class="navbar-link">Finish Station</a></li>
+            <li><a href="leaderboard.html" class="navbar-link">Leaderboard</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="hero">
+                <h1>TQ Stair Race</h1>
+                <p>Professional stair climbing race timing system with real-time synchronization and comprehensive analytics</p>
+            </div>
+
+            <div class="stations-grid">
+                <a href="start.html" class="station-card start-card">
+                    <div class="card-icon">▶</div>
+                    <div class="card-title">Start Station</div>
+                    <div class="card-description">Initialize race timing with secure NFC card authentication and real-time monitoring</div>
+                </a>
+
+                <a href="stop.html" class="station-card stop-card">
+                    <div class="card-icon">⏹</div>
+                    <div class="card-title">Finish Station</div>
+                    <div class="card-description">Complete race timing with automatic data logging and performance analytics</div>
+                </a>
+
+                <a href="leaderboard.html" class="station-card leaderboard-card">
+                    <div class="card-icon">🏆</div>
+                    <div class="card-title">Leaderboard</div>
+                    <div class="card-description">Comprehensive rankings, statistics, and historical performance data</div>
+                </a>
+            </div>
+
+            <div class="time-display">
+                <div class="time-label">System Time</div>
+                <div class="time-value" id="time"></div>
+            </div>
+
+            <div class="info-section">
+                <h2 class="info-title">System Operation</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Card Registration</div>
+                            <div class="step-description">Place NFC card on start station to initiate timing sequence</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Race Execution</div>
+                            <div class="step-description">Complete your activity while system tracks elapsed time</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Data Recording</div>
+                            <div class="step-description">Tap same card at finish station to record final time and update leaderboard</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="note">
+                    <strong>Technical Note:</strong> NFC readers operate as HID keyboard devices, automatically transmitting card identification data to the system.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleString();
+        setInterval(() => {
+            document.getElementById('time').textContent = new Date().toLocaleString();
+        }, 1000);
+    </script>
+
+    <script>
+        function toggleNavbar() {
+            const navbar = document.getElementById('navbar');
+            const overlay = document.getElementById('navbar-overlay');
+            
+            navbar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        
+        function closeNavbar() {
+            const navbar = document.getElementById('navbar');
+            const overlay = document.getElementById('navbar-overlay');
+            
+            navbar.classList.remove('open');
+            overlay.classList.remove('open');
+        }
+    </script>
+</body>
+</html>

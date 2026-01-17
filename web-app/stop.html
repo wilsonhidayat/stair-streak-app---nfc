@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finish Station - TQ Stair Race</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 300;
+            color: #ffffff;
+        }
+        
+        .station-indicator {
+            background: #333333;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #555555;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+            font-weight: 400;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 80px 0 40px;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .navbar.open {
+            right: 0;
+        }
+        
+        .navbar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .navbar-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .navbar-links {
+            list-style: none;
+            padding: 0 40px;
+        }
+        
+        .navbar-link {
+            display: block;
+            padding: 16px 0;
+            color: #cccccc;
+            text-decoration: none;
+            font-weight: 400;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: color 0.2s ease;
+        }
+        
+        .navbar-link:hover {
+            color: #ffffff;
+        }
+        
+        .navbar-link.active {
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            padding: 60px 0;
+        }
+        
+        .station-header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+        
+        .station-header h1 {
+            font-size: 48px;
+            font-weight: 200;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+        
+        .station-header p {
+            font-size: 18px;
+            opacity: 0.8;
+            font-weight: 300;
+            color: #cccccc;
+        }
+        
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .input-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffffff, #cccccc);
+        }
+        
+        .scan-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #333333, #555555);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 32px;
+            color: #ffffff;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .input-title {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+        
+        .input-subtitle {
+            font-size: 16px;
+            color: #aaaaaa;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+        
+        .nfc-input {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+        
+        .status-message {
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-message.success {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        
+        .status-message.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+        
+        .result-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .result-title {
+            font-size: 20px;
+            font-weight: 300;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        
+        .result-name {
+            font-size: 16px;
+            color: #aaaaaa;
+            margin-bottom: 12px;
+            font-weight: 300;
+        }
+        
+        .result-time {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 36px;
+            color: #ffffff;
+            font-weight: 400;
+        }
+        
+        .active-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .active-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .active-title {
+            font-size: 24px;
+            font-weight: 300;
+            color: #ffffff;
+        }
+        
+        .active-count {
+            background: #333333;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #555555;
+        }
+        
+        .active-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .timer-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffffff, #cccccc);
+        }
+        
+        .timer-card.active {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            animation: cardPulse 2s infinite;
+        }
+        
+        @keyframes cardPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer-name {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ffffff;
+            font-size: 16px;
+        }
+        
+        .timer-time {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 20px;
+            color: #ffffff;
+            font-weight: 400;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #aaaaaa;
+            font-style: italic;
+            grid-column: 1 / -1;
+            padding: 60px 20px;
+            font-size: 16px;
+            font-weight: 300;
+        }
+        
+        @media (max-width: 768px) {
+            .station-header h1 {
+                font-size: 36px;
+            }
+            
+            .input-section {
+                padding: 40px 30px;
+            }
+            
+            .active-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-text">TQ STAIR RACE</div>
+                </div>
+                <div class="station-indicator">Finish Station</div>
+                <button class="menu-toggle" onclick="toggleNavbar()">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="navbar-overlay" id="navbar-overlay" onclick="closeNavbar()"></div>
+    <nav class="navbar" id="navbar">
+        <ul class="navbar-links">
+            <li><a href="index.html" class="navbar-link">Home</a></li>
+            <li><a href="start.html" class="navbar-link">Start Station</a></li>
+            <li><a href="stop.html" class="navbar-link active">Finish Station</a></li>
+            <li><a href="leaderboard.html" class="navbar-link">Leaderboard</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="station-header">
+                <h1>Finish Station</h1>
+                <p>Complete your stair race with automatic time recording</p>
+            </div>
+
+            <div class="input-section">
+                <div class="scan-icon">⏹</div>
+                <h2 class="input-title">Tap Your Card</h2>
+                <p class="input-subtitle">Place NFC card on reader to finish timing</p>
+                <input type="text" id="nfc-input" class="nfc-input" autocomplete="off" autofocus>
+            </div>
+
+            <div id="feedback" class="status-message"></div>
+
+            <div id="last-result" class="result-section">
+                <h3 class="result-title">Last Finish</h3>
+                <div class="result-name"></div>
+                <div class="result-time"></div>
+            </div>
+
+            <div class="active-section">
+                <div class="active-header">
+                    <h3 class="active-title">Active Racers</h3>
+                    <div class="active-count"><span id="active-count">0</span> Racing</div>
+                </div>
+                <div id="active-timers" class="active-grid">
+                    <div class="empty-state">No active racers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleNavbar() {
+            const navbar = document.getElementById('navbar');
+            const overlay = document.getElementById('navbar-overlay');
+            
+            navbar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        
+        function closeNavbar() {
+            const navbar = document.getElementById('navbar');
+            const overlay = document.getElementById('navbar-overlay');
+            
+            navbar.classList.remove('open');
+            overlay.classList.remove('open');
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZgLBWM00ivf7kXb-D9sPcx6UyI6xdNRQ",
+            authDomain: "nfc-e2bca.firebaseapp.com",
+            databaseURL: "https://nfc-e2bca-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "nfc-e2bca",
+            storageBucket: "nfc-e2bca.firebasestorage.app",
+            messagingSenderId: "457400554397",
+            appId: "1:457400554397:web:3d06c3b6d4136ba9b05574"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        const nfcInput = document.getElementById('nfc-input');
+        const feedback = document.getElementById('feedback');
+        let inputBuffer = '';
+        let inputTimeout;
+
+        // Keep focus on input
+        nfcInput.focus();
+        document.addEventListener('click', () => nfcInput.focus());
+        setInterval(() => {
+            if (document.activeElement !== nfcInput) {
+                nfcInput.focus();
+            }
+        }, 1000);
+
+        // Listen for NFC reader input
+        nfcInput.addEventListener('input', (e) => {
+            clearTimeout(inputTimeout);
+            inputBuffer += e.target.value;
+            e.target.value = '';
+            
+            // Wait 100ms for complete card ID
+            inputTimeout = setTimeout(() => {
+                processCardId(inputBuffer.trim());
+                inputBuffer = '';
+            }, 100);
+        });
+
+        async function processCardId(cardId) {
+            if (!cardId || cardId.length < 3) return;
+            
+            console.log('Card detected:', cardId);
+            
+            try {
+                // Check if card has active timer
+                const timerRef = ref(database, `activeTimers/${cardId}`);
+                const timerSnapshot = await get(timerRef);
+                
+                if (!timerSnapshot.exists()) {
+                    showFeedback('No active timer found for this card', 'error');
+                    return;
+                }
+
+                // Calculate elapsed time
+                const timerData = timerSnapshot.val();
+                const elapsedTime = Date.now() - timerData.startTime;
+                const timeInSeconds = elapsedTime / 1000;
+
+                // Remove from active timers
+                await remove(timerRef);
+
+                // Add to leaderboard
+                const leaderboardRef = push(ref(database, 'leaderboard'));
+                await set(leaderboardRef, {
+                    cardId: cardId,
+                    time: timeInSeconds,
+                    timestamp: Date.now(),
+                    station: 'stop'
+                });
+
+                // Show result
+                showLastResult(cardId, timeInSeconds);
+                showFeedback('Timer Stopped - Time: ' + formatTime(timeInSeconds), 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showFeedback('System Error: ' + error.message, 'error');
+            }
+        }
+
+        function showLastResult(cardId, timeInSeconds) {
+            const resultDiv = document.getElementById('last-result');
+            const nameDiv = resultDiv.querySelector('.result-name');
+            const timeDiv = resultDiv.querySelector('.result-time');
+            
+            nameDiv.textContent = `Card: ${cardId}`;
+            timeDiv.textContent = formatTime(timeInSeconds);
+            resultDiv.style.display = 'block';
+        }
+
+        function showFeedback(message, type) {
+            feedback.textContent = message;
+            feedback.className = `status-message ${type}`;
+            feedback.style.display = 'block';
+            setTimeout(() => feedback.style.display = 'none', 3000);
+        }
+
+        // Store active timers data globally
+        let activeTimersData = {};
+        let cardsCache = {};
+
+        // Listen for active timers
+        const activeTimersRef = ref(database, 'activeTimers');
+        onValue(activeTimersRef, async (snapshot) => {
+            const timers = snapshot.val() || {};
+            activeTimersData = timers;
+            const count = Object.keys(timers).length;
+            
+            document.getElementById('active-count').textContent = count;
+            
+            // Load all card data
+            for (const cardId of Object.keys(timers)) {
+                if (!cardsCache[cardId]) {
+                    const cardRef = ref(database, `cards/${cardId}`);
+                    const cardSnap = await get(cardRef);
+                    cardsCache[cardId] = cardSnap.val() || { name: cardId };
+                }
+            }
+            
+            updateTimerDisplay();
+        });
+
+        // Update timer displays every 100ms for smooth updates
+        setInterval(() => {
+            updateTimerDisplay();
+        }, 100);
+
+        function updateTimerDisplay() {
+            const container = document.getElementById('active-timers');
+            const count = Object.keys(activeTimersData).length;
+            
+            if (count === 0) {
+                container.innerHTML = '<div class="empty-state">No active racers</div>';
+                return;
+            }
+
+            let html = '';
+            for (const [cardId, timer] of Object.entries(activeTimersData)) {
+                const cardData = cardsCache[cardId] || { name: cardId };
+                const elapsed = (Date.now() - timer.startTime) / 1000;
+                
+                html += `
+                    <div class="timer-card active">
+                        <div class="timer-name">${cardData.name || cardId}</div>
+                        <div class="timer-time">${formatTime(elapsed)}</div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = (seconds % 60).toFixed(2);
+            
+            if (h > 0) return `${h}h ${m}m ${s}s`;
+            if (m > 0) return `${m}m ${s}s`;
+            return `${s}s`;
+        }
+
+        // Initial feedback
+        showFeedback('System Ready - Waiting for NFC card', 'success');
+    </script>
+</body>
+</html>
